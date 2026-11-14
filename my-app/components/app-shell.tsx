@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -212,9 +213,13 @@ export function AppShell({
     <div className="flex flex-col h-full bg-[#F6F9FE]">
       {/* Brand Header */}
       <div className="h-14 px-5 flex items-center gap-3 border-b border-[#DCE6F7]">
-        <div className="w-7 h-7 rounded-lg bg-[#1B2CC1] flex items-center justify-center text-[#FFFFFF] font-mono-tabular text-xs font-semibold shrink-0">
-          SP
-        </div>
+        <Image
+          src="/logo-sipesat.png"
+          alt="Logo SIPESAT"
+          width={32}
+          height={32}
+          className="w-8 h-8 object-contain shrink-0"
+        />
         <div className="min-w-0" title="SIPESAT : Sistem Informasi Pelayanan Surat Terpadu">
           <p className="text-sm font-semibold tracking-tight text-[#091540] truncate">
             SIPESAT

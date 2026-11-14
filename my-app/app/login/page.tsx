@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Eye, EyeOff, Lock, Mail, X } from "lucide-react";
 import { useAppStore } from "@/lib/mock-store";
@@ -64,10 +65,16 @@ export default function LoginPage() {
 
         <div className="relative z-10">
           <div className="inline-flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#1B2CC1] flex items-center justify-center font-mono-tabular text-xs font-semibold text-[#FFFFFF]">
-              SP
+            <div className="w-10 h-10 rounded-lg bg-[#FFFFFF] p-1 flex items-center justify-center shrink-0">
+              <Image
+                src="/logo-sipesat.png"
+                alt="Logo SIPESAT"
+                width={36}
+                height={36}
+                className="w-full h-full object-contain"
+              />
             </div>
-            <span className="text-sm font-semibold tracking-tight text-[#FFFFFF]">
+            <span className="text-base font-semibold tracking-tight text-[#FFFFFF]">
               SIPESAT
             </span>
           </div>
@@ -96,9 +103,16 @@ export default function LoginPage() {
       </div>
 
       {/* Right Panel: Authentication Form (#FFFFFF) */}
-      <div className="bg-[#FFFFFF] p-8 sm:p-12 lg:p-16 flex items-center justify-center lg:justify-start">
-        <div className="w-full max-w-sm">
-          <div>
+      <div className="bg-[#FFFFFF] p-8 sm:p-12 lg:p-16 flex items-center justify-center">
+        <div className="w-full max-w-sm mx-auto">
+          <div className="text-center">
+            <Image
+              src="/logo-sipesat.png"
+              alt="Logo SIPESAT"
+              width={56}
+              height={56}
+              className="w-14 h-14 object-contain mx-auto mb-3"
+            />
             <h2 className="text-2xl font-semibold tracking-tight text-[#091540]">
               Masuk ke Akun
             </h2>
@@ -201,7 +215,7 @@ export default function LoginPage() {
 
           {/* Quick Role Switcher for Testing All PRD Flows */}
           <div className="mt-8 pt-6 border-t border-[#DCE6F7]">
-            <p className="text-xs font-medium text-[#475577] mb-3">
+            <p className="text-xs font-medium text-[#475577] mb-3 text-center">
               Akses Cepat Simulasi Peran (Demo):
             </p>
             <div className="grid grid-cols-1 gap-2">
