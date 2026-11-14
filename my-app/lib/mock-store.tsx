@@ -41,7 +41,7 @@ import {
   uploadRealFileToStorage,
 } from "./supabase/file-storage";
 
-const STORAGE_KEY = "sipas_frontend_state_v3";
+const STORAGE_KEY = "sipas_frontend_state_v4";
 
 interface AppState {
   currentUserId: string | null;

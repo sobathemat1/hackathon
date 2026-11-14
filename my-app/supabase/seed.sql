@@ -69,6 +69,32 @@ INSERT INTO letter_types (id, code, name, description, estimated_days, required_
     true,
     '2026-01-10T08:00:00+07:00',
     '2026-01-10T08:00:00+07:00'
+  ),
+  (
+    '33333333-3333-4333-8333-000000000005',
+    'PROPOSAL-KEGIATAN',
+    'Pengajuan & Pengesahan Proposal Kegiatan',
+    'Pengajuan dokumen proposal kegiatan himpunan untuk verifikasi anggaran, substansi acara, dan pengesahan pimpinan fakultas/kemahasiswaan.',
+    4,
+    '[{"key":"proposal_utama","label":"Dokumen Proposal Kegiatan Lengkap","required":true,"accepted_types":[".pdf",".docx"],"category":"draft_letter"},{"key":"rab_anggaran","label":"Rencana Anggaran Biaya (RAB)","required":true,"accepted_types":[".pdf",".docx"],"category":"supporting_doc"},{"key":"lembar_pengesahan","label":"Lembar Pengesahan Proposal","required":true,"accepted_types":[".pdf",".docx"],"category":"supporting_doc"}]'::jsonb,
+    '[{"key":"activity_name","label":"Nama Kegiatan","type":"text","required":true,"placeholder":"Contoh: Pekan Teknologi Informasi 2026"},{"key":"total_budget","label":"Total Estimasi Anggaran (Rp)","type":"text","required":true,"placeholder":"Contoh: Rp 15.000.000"},{"key":"person_in_charge","label":"Ketua Pelaksana","type":"text","required":true,"placeholder":"Nama lengkap ketua pelaksana"}]'::jsonb,
+    '/templates/Template_Proposal_Kegiatan.docx',
+    true,
+    '2026-01-10T08:00:00+07:00',
+    '2026-01-10T08:00:00+07:00'
+  ),
+  (
+    '33333333-3333-4333-8333-000000000006',
+    'TTD-DOKUMEN',
+    'Permohonan Tanda Tangan / Pengesahan Dokumen',
+    'Permohonan tanda tangan basah atau elektronik pimpinan fakultas/jurusan untuk LPJ, sertifikat, MoU, SK kepanitiaan, atau dokumen resmi organisasi lainnya.',
+    2,
+    '[{"key":"dokumen_ttd","label":"Dokumen yang Dimintakan Tanda Tangan","required":true,"accepted_types":[".pdf",".docx"],"category":"draft_letter"},{"key":"surat_pengantar_ttd","label":"Surat Pengantar / Bukti Verifikasi Pembina","required":true,"accepted_types":[".pdf",".jpg",".png"],"category":"supporting_doc"}]'::jsonb,
+    '[{"key":"document_type_detail","label":"Jenis Dokumen yang Ditandatangani","type":"text","required":true,"placeholder":"Contoh: Lembar Pengesahan LPJ / Sertifikat Pemateri / SK Panitia"},{"key":"signer_position","label":"Jabatan Pejabat Penandatangan","type":"text","required":true,"placeholder":"Contoh: Wakil Dekan III Bidang Kemahasiswaan / Ketua Jurusan"}]'::jsonb,
+    '/templates/Template_Permohonan_TTD_Dokumen.docx',
+    true,
+    '2026-01-10T08:00:00+07:00',
+    '2026-01-10T08:00:00+07:00'
   )
 ON CONFLICT (id) DO NOTHING;
 

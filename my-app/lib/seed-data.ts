@@ -293,6 +293,108 @@ export const SEED_LETTER_TYPES: LetterType[] = [
     created_at: "2026-01-10T08:00:00+07:00",
     updated_at: "2026-01-10T08:00:00+07:00",
   },
+  {
+    id: "33333333-3333-4333-8333-000000000005",
+    code: "PROPOSAL-KEGIATAN",
+    name: "Pengajuan & Pengesahan Proposal Kegiatan",
+    description:
+      "Pengajuan dokumen proposal kegiatan himpunan untuk verifikasi anggaran, substansi acara, dan pengesahan pimpinan fakultas/kemahasiswaan.",
+    estimated_days: 4,
+    required_documents: [
+      {
+        key: "proposal_utama",
+        label: "Dokumen Proposal Kegiatan Lengkap",
+        required: true,
+        accepted_types: [".pdf", ".docx"],
+        category: "draft_letter",
+      },
+      {
+        key: "rab_anggaran",
+        label: "Rencana Anggaran Biaya (RAB)",
+        required: true,
+        accepted_types: [".pdf", ".docx"],
+        category: "supporting_doc",
+      },
+      {
+        key: "lembar_pengesahan",
+        label: "Lembar Pengesahan Proposal",
+        required: true,
+        accepted_types: [".pdf", ".docx"],
+        category: "supporting_doc",
+      },
+    ],
+    custom_fields_schema: [
+      {
+        key: "activity_name",
+        label: "Nama Kegiatan",
+        type: "text",
+        required: true,
+        placeholder: "Contoh: Pekan Teknologi Informasi 2026",
+      },
+      {
+        key: "total_budget",
+        label: "Total Estimasi Anggaran (Rp)",
+        type: "text",
+        required: true,
+        placeholder: "Contoh: Rp 15.000.000",
+      },
+      {
+        key: "person_in_charge",
+        label: "Ketua Pelaksana",
+        type: "text",
+        required: true,
+        placeholder: "Nama lengkap ketua pelaksana",
+      },
+    ],
+    template_file_path: "/templates/Template_Proposal_Kegiatan.docx",
+    is_active: true,
+    created_at: "2026-01-10T08:00:00+07:00",
+    updated_at: "2026-01-10T08:00:00+07:00",
+  },
+  {
+    id: "33333333-3333-4333-8333-000000000006",
+    code: "TTD-DOKUMEN",
+    name: "Permohonan Tanda Tangan / Pengesahan Dokumen",
+    description:
+      "Permohonan tanda tangan basah atau elektronik pimpinan fakultas/jurusan untuk LPJ, sertifikat, MoU, SK kepanitiaan, atau dokumen resmi organisasi lainnya.",
+    estimated_days: 2,
+    required_documents: [
+      {
+        key: "dokumen_ttd",
+        label: "Dokumen yang Dimintakan Tanda Tangan",
+        required: true,
+        accepted_types: [".pdf", ".docx"],
+        category: "draft_letter",
+      },
+      {
+        key: "surat_pengantar_ttd",
+        label: "Surat Pengantar / Bukti Verifikasi Pembina",
+        required: true,
+        accepted_types: [".pdf", ".jpg", ".png"],
+        category: "supporting_doc",
+      },
+    ],
+    custom_fields_schema: [
+      {
+        key: "document_type_detail",
+        label: "Jenis Dokumen yang Ditandatangani",
+        type: "text",
+        required: true,
+        placeholder: "Contoh: Lembar Pengesahan LPJ / Sertifikat Pemateri / SK Panitia",
+      },
+      {
+        key: "signer_position",
+        label: "Jabatan Pejabat Penandatangan",
+        type: "text",
+        required: true,
+        placeholder: "Contoh: Wakil Dekan III Bidang Kemahasiswaan / Ketua Jurusan",
+      },
+    ],
+    template_file_path: "/templates/Template_Permohonan_TTD_Dokumen.docx",
+    is_active: true,
+    created_at: "2026-01-10T08:00:00+07:00",
+    updated_at: "2026-01-10T08:00:00+07:00",
+  },
 ];
 
 export const SEED_SUBMISSIONS: Submission[] = [
