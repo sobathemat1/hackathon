@@ -29,6 +29,7 @@ interface StagedFile {
   file_size_bytes: number;
   mime_type: string;
   progress: number;
+  file?: File;
 }
 
 function NewSubmissionContent() {
@@ -42,6 +43,7 @@ function NewSubmissionContent() {
     submissions,
     documents,
     createOrUpdateSubmission,
+    downloadLetterTemplate,
   } = useAppStore();
 
   const activeLetterTypes = useMemo(
@@ -79,7 +81,8 @@ function NewSubmissionContent() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (existingDraft) {
+    if (!existingDraft) return;
+    queueMicrotask(() => {
       setSelectedTypeId(existingDraft.letter_type_id);
       setTitle(existingDraft.title);
       setRecipientTarget(existingDraft.recipient_target);
@@ -98,7 +101,7 @@ function NewSubmissionContent() {
           progress: 100,
         }));
       setStagedFiles(existingDocs);
-    }
+    });
   }, [existingDraft, documents]);
 
   const currentLetterType = useMemo(
@@ -109,9 +112,11 @@ function NewSubmissionContent() {
   );
 
   useEffect(() => {
-    if (currentLetterType?.required_documents.length) {
-      setSelectedDocKey(currentLetterType.required_documents[0].key);
-    }
+    const firstKey = currentLetterType?.required_documents[0]?.key;
+    if (!firstKey) return;
+    queueMicrotask(() => {
+      setSelectedDocKey(firstKey);
+    });
   }, [currentLetterType]);
 
   const handleFilesAdded = (fileList: FileList | null) => {
@@ -158,6 +163,7 @@ function NewSubmissionContent() {
         file_size_bytes: file.size,
         mime_type: file.type || "application/pdf",
         progress: 25,
+        file,
       });
     }
 
@@ -248,14 +254,7 @@ function NewSubmissionContent() {
 
   const handleDownloadTemplate = () => {
     if (!currentLetterType) return;
-    const content = `TEMPLATE SURAT RESMI KAMPUS\nJenis: ${currentLetterType.name} (${currentLetterType.code})\n\nNomor: ...\nPerihal: ...\nKepada Yth. ...\n\nIsi surat sesuai ketentuan tata naskah dinas universitas.`;
-    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Template_${currentLetterType.code}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+    void downloadLetterTemplate(currentLetterType);
   };
 
   return (

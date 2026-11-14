@@ -150,7 +150,7 @@ export default function AdminOrganizationsPage() {
                   required
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
-                  placeholder="HMIF"
+                  placeholder="HIMATIF"
                   className="px-3 py-2 text-sm font-mono-tabular border border-[#DCE6F7] rounded-lg"
                 />
               </div>

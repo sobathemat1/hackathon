@@ -22,7 +22,7 @@ export default function ProfilePage() {
     e.preventDefault();
     updateProfile({ name, phone, nim_nip: nimNip });
     if (newPassword.length >= 8) {
-      completePasswordChange();
+      completePasswordChange(newPassword);
       setNewPassword("");
     }
     setSavedMsg("Profil dan pengaturan akun berhasil diperbarui.");

@@ -195,25 +195,32 @@ export function AppShell({
   const navItems = NAV_BY_ROLE[currentUser.role];
 
   const isNavActive = (href: string) => {
+    if (pathname === href) return true;
     if (href === "/mahasiswa" || href === "/ult" || href === "/admin") {
-      return pathname === href;
+      return false;
     }
-    return pathname === href || pathname.startsWith(`${href}/`);
+    if (!pathname.startsWith(`${href}/`)) return false;
+    return !navItems.some(
+      (other) =>
+        other.href !== href &&
+        other.href.startsWith(`${href}/`) &&
+        (pathname === other.href || pathname.startsWith(`${other.href}/`))
+    );
   };
 
   const SidebarContent = (
     <div className="flex flex-col h-full bg-[#F6F9FE]">
       {/* Brand Header */}
       <div className="h-14 px-5 flex items-center gap-3 border-b border-[#DCE6F7]">
-        <div className="w-7 h-7 rounded-lg bg-[#1B2CC1] flex items-center justify-center text-[#FFFFFF] font-mono-tabular text-xs font-semibold">
+        <div className="w-7 h-7 rounded-lg bg-[#1B2CC1] flex items-center justify-center text-[#FFFFFF] font-mono-tabular text-xs font-semibold shrink-0">
           SP
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0" title="SIPESAT : Sistem Informasi Pelayanan Surat Terpadu">
           <p className="text-sm font-semibold tracking-tight text-[#091540] truncate">
-            SIPAS Kampus
+            SIPESAT
           </p>
           <p className="text-[11px] text-[#475577] truncate">
-            Administrasi Persuratan
+            Sistem Informasi Pelayanan Surat Terpadu
           </p>
         </div>
       </div>
@@ -286,7 +293,7 @@ export function AppShell({
   return (
     <div className="min-h-[100dvh] flex bg-[#FFFFFF] text-[#091540]">
       {/* Desktop Fixed Sidebar */}
-      <aside className="hidden lg:block w-64 shrink-0 border-r border-[#DCE6F7] sticky top-0 h-[100dvh]">
+      <aside className="hidden lg:flex lg:flex-col w-64 shrink-0 border-r border-[#DCE6F7] fixed inset-y-0 left-0 z-40 h-[100dvh]">
         {SidebarContent}
       </aside>
 
@@ -312,7 +319,7 @@ export function AppShell({
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-64">
         {/* Top Bar */}
         <header className="h-14 bg-[#FFFFFF] border-b border-[#DCE6F7] px-4 lg:px-8 flex items-center justify-between gap-4 sticky top-0 z-30">
           <div className="flex items-center gap-3 min-w-0">

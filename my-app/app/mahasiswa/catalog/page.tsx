@@ -7,19 +7,8 @@ import { AppShell } from "@/components/app-shell";
 import { useAppStore } from "@/lib/mock-store";
 
 export default function MahasiswaCatalogPage() {
-  const { letterTypes } = useAppStore();
+  const { letterTypes, downloadLetterTemplate } = useAppStore();
   const activeTypes = letterTypes.filter((lt) => lt.is_active);
-
-  const handleDownloadTemplate = (code: string, name: string) => {
-    const content = `TEMPLATE SURAT RESMI KAMPUS\nJenis: ${name} (${code})\n\nNomor: ...\nPerihal: ...\nKepada Yth. ...\n\nIsi surat sesuai ketentuan tata naskah dinas universitas.`;
-    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Template_${code}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
 
   return (
     <AppShell
@@ -73,7 +62,7 @@ export default function MahasiswaCatalogPage() {
                 {lt.template_file_path && (
                   <button
                     type="button"
-                    onClick={() => handleDownloadTemplate(lt.code, lt.name)}
+                    onClick={() => void downloadLetterTemplate(lt)}
                     className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-[#DCE6F7] bg-[#FFFFFF] hover:bg-[#F6F9FE] text-[#091540] text-xs font-medium transition-colors"
                   >
                     <Download className="w-3.5 h-3.5 text-[#1B2CC1]" strokeWidth={1.5} />

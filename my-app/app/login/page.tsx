@@ -68,7 +68,7 @@ export default function LoginPage() {
               SP
             </div>
             <span className="text-sm font-semibold tracking-tight text-[#FFFFFF]">
-              SIPAS KAMPUS
+              SIPESAT
             </span>
           </div>
 
@@ -77,7 +77,7 @@ export default function LoginPage() {
               Unit Layanan Terpadu &amp; UPATIK
             </p>
             <h1 className="mt-3 text-2xl sm:text-3xl font-semibold tracking-tight text-[#FFFFFF] leading-snug">
-              Sistem Pengajuan Surat Administrasi Terpusat
+              SIPESAT : Sistem Informasi Pelayanan Surat Terpadu
             </h1>
             <p className="mt-4 text-sm text-[#ABD2FA]/90 leading-relaxed">
               Platform resmi pengelolaan pengajuan surat organisasi mahasiswa,
@@ -212,7 +212,7 @@ export default function LoginPage() {
               >
                 <div>
                   <p className="text-xs font-semibold text-[#091540]">
-                    Budi Santoso (HMIF)
+                    Budi Santoso (HIMATIF)
                   </p>
                   <p className="text-[11px] text-[#475577] font-mono-tabular">
                     budi.santoso@hmif.ac.id

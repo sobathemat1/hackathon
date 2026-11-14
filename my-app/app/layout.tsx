@@ -16,9 +16,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SIPAS — Sistem Pengajuan Surat Administrasi Kampus",
+  title: "SIPESAT : Sistem Informasi Pelayanan Surat Terpadu",
   description:
-    "Platform terpusat pengajuan, verifikasi, pemrosesan, dan pengarsipan surat administrasi organisasi mahasiswa dan Unit Layanan Terpadu (ULT).",
+    "SIPESAT (Sistem Informasi Pelayanan Surat Terpadu) — Platform terpusat pengajuan, verifikasi, pemrosesan, dan pengarsipan surat administrasi organisasi mahasiswa dan Unit Layanan Terpadu (ULT).",
 };
 
 export default function RootLayout({

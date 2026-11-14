@@ -19,6 +19,10 @@ export default function AdminUsersPage() {
   const [role, setRole] = useState<UserRole>("mahasiswa");
   const [orgId, setOrgId] = useState<string>(organizations[0]?.id ?? "");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [createdBanner, setCreatedBanner] = useState<{
+    email: string;
+    tempPassword: string;
+  } | null>(null);
 
   const openCreate = () => {
     setEditingUser(null);
@@ -45,7 +49,7 @@ export default function AdminUsersPage() {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim()) return;
-    upsertUser({
+    const res = upsertUser({
       id: editingUser?.id,
       name: name.trim(),
       email: email.trim(),
@@ -58,6 +62,12 @@ export default function AdminUsersPage() {
         ? editingUser.must_change_password
         : true,
     });
+    if (!editingUser && res.tempPassword) {
+      setCreatedBanner({
+        email: email.trim(),
+        tempPassword: res.tempPassword,
+      });
+    }
     setModalOpen(false);
   };
 
@@ -100,6 +110,27 @@ export default function AdminUsersPage() {
           <span>Undang Pengguna</span>
         </button>
       </div>
+
+      {createdBanner && (
+        <div className="mt-4 p-4 rounded-xl border border-[#86EFAC] bg-[#DCFCE7]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#166534]">
+          <div>
+            <p className="font-semibold">
+              Akun berhasil dibuat (Tanpa Server Email / Direct Provisioning)
+            </p>
+            <p className="mt-0.5 font-mono-tabular">
+              Email: <strong>{createdBanner.email}</strong> • Password Sementara:{" "}
+              <strong>{createdBanner.tempPassword}</strong>
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setCreatedBanner(null)}
+            className="px-3 py-1 rounded-lg border border-[#86EFAC] bg-[#FFFFFF] font-medium self-start sm:self-auto"
+          >
+            Tutup
+          </button>
+        </div>
+      )}
 
       {/* Users Table */}
       <div className="mt-6 border border-[#DCE6F7] rounded-xl bg-[#FFFFFF] overflow-hidden">

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   AlertTriangle,
@@ -26,7 +26,7 @@ import {
 } from "@/lib/constants";
 import { DocumentCategory, SubmissionDocument } from "@/lib/types";
 
-export default function SubmissionDetailPage() {
+function SubmissionDetailContent() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const {
@@ -39,6 +39,8 @@ export default function SubmissionDetailPage() {
     histories,
     claimSubmission,
     transitionSubmission,
+    downloadDocument,
+    getDocumentPreviewUrl,
   } = useAppStore();
 
   const submission = useMemo(
@@ -47,6 +49,8 @@ export default function SubmissionDetailPage() {
   );
 
   const [previewDoc, setPreviewDoc] = useState<SubmissionDocument | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewSource, setPreviewSource] = useState<string>("supabase-storage");
   const [expandedOldVersions, setExpandedOldVersions] = useState<
     Record<string, boolean>
   >({});
@@ -61,6 +65,7 @@ export default function SubmissionDetailPage() {
     file_name: string;
     file_size_bytes: number;
     mime_type: string;
+    file?: File;
   } | null>(null);
 
   // Mahasiswa Revision States
@@ -72,9 +77,77 @@ export default function SubmissionDetailPage() {
       file_name: string;
       file_size_bytes: number;
       mime_type: string;
+      file?: File;
     }[]
   >([]);
   const [actionError, setActionError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    let revokeUrl: string | null = null;
+    if (!previewDoc) {
+      queueMicrotask(() => {
+        if (active) setPreviewUrl(null);
+      });
+      return;
+    }
+    void getDocumentPreviewUrl(previewDoc, submission?.submission_number).then(
+      (res) => {
+        if (!active) {
+          if (res.revokeOnCleanup) URL.revokeObjectURL(res.url);
+          return;
+        }
+        if (res.revokeOnCleanup) revokeUrl = res.url;
+        setPreviewUrl(res.url);
+        setPreviewSource(res.source);
+      }
+    );
+    return () => {
+      active = false;
+      if (revokeUrl) URL.revokeObjectURL(revokeUrl);
+    };
+  }, [previewDoc, getDocumentPreviewUrl, submission?.submission_number]);
+
+  const subDocs = useMemo(
+    () =>
+      submission
+        ? documents.filter((d) => d.submission_id === submission.id)
+        : [],
+    [documents, submission]
+  );
+
+  const docGroups = useMemo(() => {
+    const groups: Record<string, SubmissionDocument[]> = {};
+    subDocs
+      .filter((d) => d.category !== "result_letter")
+      .forEach((d) => {
+        if (!groups[d.document_key]) groups[d.document_key] = [];
+        groups[d.document_key].push(d);
+      });
+    Object.values(groups).forEach((arr) =>
+      arr.sort((a, b) => b.version - a.version)
+    );
+    return groups;
+  }, [subDocs]);
+
+  const subHistories = useMemo(
+    () =>
+      submission
+        ? histories
+            .filter((h) => h.submission_id === submission.id)
+            .sort(
+              (a, b) =>
+                new Date(b.created_at).getTime() -
+                new Date(a.created_at).getTime()
+            )
+        : [],
+    [histories, submission]
+  );
+
+  const latestRevisionNote = useMemo(() => {
+    if (!submission || submission.status !== "revision_required") return null;
+    return subHistories.find((h) => h.to_status === "revision_required")?.notes;
+  }, [submission, subHistories]);
 
   if (!submission) {
     return (
@@ -118,53 +191,12 @@ export default function SubmissionDetailPage() {
   const submitter = users.find((u) => u.id === submission.user_id);
   const picUser = users.find((u) => u.id === submission.assigned_to);
 
-  const subDocs = documents.filter((d) => d.submission_id === submission.id);
   const resultLetterDoc = subDocs.find(
     (d) => d.category === "result_letter" && d.is_current
   );
 
-  // Group non-result docs by document_key
-  const docGroups = useMemo(() => {
-    const groups: Record<string, SubmissionDocument[]> = {};
-    subDocs
-      .filter((d) => d.category !== "result_letter")
-      .forEach((d) => {
-        if (!groups[d.document_key]) groups[d.document_key] = [];
-        groups[d.document_key].push(d);
-      });
-    Object.values(groups).forEach((arr) =>
-      arr.sort((a, b) => b.version - a.version)
-    );
-    return groups;
-  }, [subDocs]);
-
-  const subHistories = useMemo(
-    () =>
-      histories
-        .filter((h) => h.submission_id === submission.id)
-        .sort(
-          (a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        ),
-    [histories, submission.id]
-  );
-
-  const latestRevisionNote = useMemo(() => {
-    if (submission.status !== "revision_required") return null;
-    return subHistories.find((h) => h.to_status === "revision_required")?.notes;
-  }, [submission.status, subHistories]);
-
   const handleSimulatedDownload = (doc: SubmissionDocument) => {
-    const content = `DOKUMEN SIMULASI SIPAS\nNama File: ${doc.file_name}\nNomor Pengajuan: ${
-      submission.submission_number ?? "DRAFT"
-    }\nVersi: v${doc.version}\nDiunduh via Signed URL (berlaku 60 detik).`;
-    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = doc.file_name;
-    a.click();
-    URL.revokeObjectURL(url);
+    void downloadDocument(doc, submission.submission_number);
   };
 
   const handleUltReviewSubmit = (e: React.FormEvent) => {
@@ -659,6 +691,7 @@ export default function SubmissionDetailPage() {
                               file_name: f.name,
                               file_size_bytes: f.size,
                               mime_type: f.type || "application/pdf",
+                              file: f,
                             });
                           }}
                         />
@@ -749,6 +782,7 @@ export default function SubmissionDetailPage() {
                               file_name: f.name,
                               file_size_bytes: f.size,
                               mime_type: f.type || "application/pdf",
+                              file: f,
                             },
                           ]);
                         }}
@@ -866,22 +900,31 @@ export default function SubmissionDetailPage() {
                 <X className="w-4 h-4" strokeWidth={1.5} />
               </button>
             </div>
-            <div className="p-8 bg-[#F6F9FE] text-center">
-              <div className="max-w-md mx-auto bg-[#FFFFFF] border border-[#DCE6F7] rounded-lg p-6 text-left space-y-3">
+            <div className="p-5 bg-[#F6F9FE] space-y-3">
+              {previewUrl &&
+              (previewDoc.mime_type === "application/pdf" ||
+                previewDoc.file_name.toLowerCase().endsWith(".pdf")) ? (
+                <iframe
+                  src={previewUrl}
+                  title={previewDoc.file_name}
+                  className="w-full h-[380px] rounded-lg border border-[#DCE6F7] bg-[#FFFFFF]"
+                />
+              ) : previewUrl && previewDoc.mime_type.startsWith("image/") ? (
+                <div className="max-h-[380px] overflow-auto flex items-center justify-center rounded-lg border border-[#DCE6F7] bg-[#FFFFFF] p-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={previewUrl}
+                    alt={previewDoc.file_name}
+                    className="max-h-[350px] object-contain"
+                  />
+                </div>
+              ) : null}
+              <div className="bg-[#FFFFFF] border border-[#DCE6F7] rounded-lg p-4 text-left space-y-1.5">
                 <p className="text-xs font-mono-tabular text-[#1B2CC1] font-semibold">
-                  PRATINJAU DOKUMEN (SIGNED URL)
-                </p>
-                <p className="text-sm font-semibold text-[#091540]">
-                  {submission.title}
+                  PRATINJAU DOKUMEN ({previewSource === "supabase-storage" ? "SUPABASE STORAGE SIGNED URL 60s" : "BINARY FILE STORAGE"})
                 </p>
                 <p className="text-xs text-[#475577] leading-relaxed">
-                  Dokumen ini disimpan di Private Bucket Supabase Storage pada
-                  jalur{" "}
-                  <span className="font-mono-tabular text-[#091540]">
-                    {previewDoc.file_path}
-                  </span>
-                  . Pada lingkungan produksi, panel ini merender PDF viewer
-                  langsung melalui Signed URL berumur 60 detik.
+                  Jalur bucket <span className="font-mono-tabular text-[#091540]">submission-files/{previewDoc.file_path}</span>
                 </p>
               </div>
             </div>
@@ -906,5 +949,19 @@ export default function SubmissionDetailPage() {
         </div>
       )}
     </AppShell>
+  );
+}
+
+export default function SubmissionDetailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-[100dvh] bg-[#FFFFFF] p-8 text-sm text-[#475577]">
+          Memuat detail pengajuan...
+        </div>
+      }
+    >
+      <SubmissionDetailContent />
+    </Suspense>
   );
 }
